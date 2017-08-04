@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
+using Titanium.Web.Proxy.Helpers;
 using Titanium.Web.Proxy.Http;
 using Titanium.Web.Proxy.Models;
 
@@ -18,7 +20,8 @@ namespace kiss_proxy {
             _proxyServer = new ProxyServer {
                 ExceptionFunc = ExceptionFunc,
                 TrustRootCertificate = true,
-                ForwardToUpstreamGateway = true
+                ForwardToUpstreamGateway = true,
+                
             };
         }
 
@@ -28,14 +31,25 @@ namespace kiss_proxy {
             _proxyServer.GetCustomUpStreamHttpProxyFunc = GetCustomUpStreamProxy;
             _proxyServer.GetCustomUpStreamHttpsProxyFunc = GetCustomUpStreamProxy;
 
-            var explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, 3128, true);
-            var explicitEndPoint2 = new ExplicitProxyEndPoint(IPAddress.Parse("10.61.19.99"), 3128, true);
+
+            // get preferred outbound IP address of local machine
+            var localIp = IPAddress.Any;
+            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0)) {
+                socket.Connect("8.8.8.8", 65530);
+                IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+                if (endPoint != null) {
+                    localIp = endPoint.Address;
+                }
+            }
+            var explicitEndPoint = new ExplicitProxyEndPoint(localIp, 3128, true);
             //ExcludedHttpsHostNameRegex = new List<string> { "dropbox.com", "google.com" },
 
             // An explicit endpoint is where the client knows about the existence of a proxy so client sends request in a proxy friendly manner
             _proxyServer.AddEndPoint(explicitEndPoint);
-            _proxyServer.AddEndPoint(explicitEndPoint2);
+
+
             _proxyServer.Start();
+            _proxyServer.SetAsSystemProxy(explicitEndPoint, ProxyProtocolType.AllHttp);
             
             foreach (var endPoint in _proxyServer.ProxyEndPoints)
                 Console.WriteLine("Listening on '{0}' endpoint at Ip {1} and port: {2} ", endPoint.GetType().Name, endPoint.IpAddress, endPoint.Port);
@@ -67,15 +81,17 @@ namespace kiss_proxy {
                     Port = 3128
                 };
             } else {
+                Console.WriteLine("PROXY DEFAULT : " + sessionEventArgs.WebSession.Request.Host);
+                var webProxy = WebRequest.GetSystemWebProxy().GetProxy(sessionEventArgs.WebSession.Request.RequestUri);
                 proxy = new ExternalProxy {
-                    HostName = "lyon.proxy.corp.sopra",
-                    Port = 8080
+                    HostName = webProxy.Host,
+                    Port = webProxy.Port
                 };
             }
             return Task.FromResult(proxy);
         }
 
-        //intecept & cancel redirect or update requests
+        // intecept & cancel redirect or update requests
         public async Task OnRequest(object sender, SessionEventArgs e) {
 
             Console.WriteLine("Active Client Connections:" + ((ProxyServer)sender).ClientConnectionCount + " <-> " + e.WebSession.Request.Url + " <-> " + e.ClientEndPoint.Address);
