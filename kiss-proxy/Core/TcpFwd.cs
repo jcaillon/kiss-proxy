@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using kissproxy.Lib;
 
 namespace kissproxy.Core {
 
@@ -26,14 +27,13 @@ namespace kissproxy.Core {
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="local"></param>
-        /// <param name="distant"></param>
-        /// <param name="buffer"></param>
-        public TcpFwd(IPEndPoint local, IPEndPoint distant, int buffer = 4096) {
-            Local = local;
-            Distant = distant;
+        public TcpFwd(TcpForwarder fwd, int buffer = 4096) {
+            Local = new IPEndPoint(!string.IsNullOrEmpty(fwd.LocalAddress) ? IPAddress.Parse(fwd.LocalAddress) : Utils.LocalMachineIpAddress, fwd.LocalPort);
+            Distant = new IPEndPoint(IPAddress.Parse(fwd.DistantAddress), fwd.DistantPort);
             Buffer = buffer;
         }
+
+        public string ServerInfo => Local.Address + ":" + Local.Port;
 
         /// <summary>
         /// Start the TCP relayer
@@ -56,6 +56,8 @@ namespace kissproxy.Core {
             _listener = new TcpListener(Local.Address, Local.Port);
             var bufferSize = Buffer; // Get the current buffer size on start
             _listener.Start();
+
+            Logger.Log(ProxyType.TcpForwarder, Local, Local, "Starting tcp forwarder server...");
             Running = true;
 
             // If there is an exception we want to output the message to the console for debugging
@@ -70,7 +72,7 @@ namespace kissproxy.Core {
 
                 }
             } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
+                ErrorHandler.LogErrors(ex);
             }
 
             _listener.Stop();
@@ -83,6 +85,8 @@ namespace kissproxy.Core {
         /// <param name="bufferSize"></param>
         /// <returns></returns>
         private void ProxyClientConnection(TcpClient client, int bufferSize) {
+            
+            Logger.Log(ProxyType.TcpForwarder, (IPEndPoint)client.Client.RemoteEndPoint, Local, $"FWD {Distant.Address}:{Distant.Port}");
 
             // Handle this client
             // Send the server data to client and client data to server - swap essentially.
@@ -97,7 +101,7 @@ namespace kissproxy.Core {
                 new Task(() => ProxyClientDataToServer(client, serverStream, clientStream, bufferSize, cancellationToken), cancellationToken).Start();
                 new Task(() => ProxyServerDataToClient(serverStream, clientStream, bufferSize, cancellationToken), cancellationToken).Start();
             } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
+                ErrorHandler.LogErrors(ex);
             }
 
         }
@@ -178,13 +182,13 @@ namespace kissproxy.Core {
                 try {
                     Running = false;
                     _listener.Stop();
+                    Logger.Log(ProxyType.TcpForwarder, Local, Local, "Stopping tcp forwarder server...");
+
                     _cancellationTokenSource.Cancel();
                 } catch (Exception ex) {
-                    Console.WriteLine(ex.Message);
+                    ErrorHandler.LogErrors(ex);
                 }
-
                 _cancellationTokenSource = null;
-
             }
         }
 

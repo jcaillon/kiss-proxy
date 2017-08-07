@@ -17,6 +17,8 @@ namespace kissproxy {
 
         private static List<HttpProxy> _proxies = new List<HttpProxy>();
 
+        private static List<TcpFwd> _forwarders = new List<TcpFwd>();
+
         private static MainForm _mainForm;
 
 
@@ -62,6 +64,8 @@ namespace kissproxy {
                 Application.Exit();
                 return false;
             }
+            if (_mainForm != null)
+                _mainForm.ShowBalloon("All done!", "Config file reloaded", ToolTipIcon.Info, 3);
             return true;
         }
 
@@ -75,6 +79,13 @@ namespace kissproxy {
                     var prox = new HttpProxy(proxy);
                     _proxies.Add(prox);
                     prox.Start();
+                }
+
+                // start TCP FORWARDER
+                foreach (var forwarder in Config.TcpForwarders) {
+                    var fwd = new TcpFwd(forwarder);
+                    _forwarders.Add(fwd);
+                    fwd.Start();
                 }
             } catch (Exception e) {
                 ErrorHandler.LogErrors(e);
@@ -92,6 +103,11 @@ namespace kissproxy {
                     proxy.Stop();
                 }
                 _proxies.Clear();
+                // stop TCP FORWARDER
+                foreach (var fwd in _forwarders) {
+                    fwd.Stop();
+                }
+                _forwarders.Clear();
             } catch (Exception e) {
                 ErrorHandler.LogErrors(e);
             }
@@ -114,6 +130,14 @@ namespace kissproxy {
 
         public static void ShowStartedServers() {
             var sb = new StringBuilder();
+            sb.AppendLine("List of the started servers : ");
+            sb.AppendLine();
+            foreach (var httpProxy in _proxies) {
+                sb.AppendLine("HTTP PROXY @ " + httpProxy.ServerInfo);
+            }
+            foreach (var fwd in _forwarders) {
+                sb.AppendLine("TCP FOWARDER @ " + fwd.ServerInfo);
+            }
             MessageBox.Show(sb.ToString(), "Started servers", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }

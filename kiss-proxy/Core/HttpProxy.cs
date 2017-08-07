@@ -4,6 +4,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using kissproxy.Lib;
+using StreamExtended;
 using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
 using Titanium.Web.Proxy.Models;
@@ -76,6 +77,8 @@ namespace kissproxy.Core {
             Logger.Log(ProxyType.HttpProxy, _thisEndPoint, _thisEndPoint, "Stopping proxy server...");
         }
 
+        public string ServerInfo => _thisEndPoint.Address + ":" + _thisEndPoint.Port;
+
         /// <summary>
         /// Gets the system up stream proxy
         /// </summary>
@@ -103,7 +106,7 @@ namespace kissproxy.Core {
                         }
 
                         if (proxy != null) {
-                            Logger.Log(ProxyType.HttpProxy, e.ClientEndPoint, _thisEndPoint, $"NEW SERVER CONNEXION ({_proxyServer.ServerConnectionCount}) TO {e.WebSession.Request.RequestUri.Host}:{e.WebSession.Request.RequestUri.Port} USING EXTERNAL PROXY {proxy.HostName}:{proxy.Port}");
+                            Logger.Log(ProxyType.HttpProxy, e.ClientEndPoint, _thisEndPoint, $"EXTERNALPROXY new connexion ({_proxyServer.ServerConnectionCount}) to {e.WebSession.Request.RequestUri.Host}:{e.WebSession.Request.RequestUri.Port} using {proxy.HostName}:{proxy.Port}");
                             return Task.FromResult(proxy);
                         }
                     }
