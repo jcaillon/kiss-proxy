@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1B0B3584-9E20-42EC-A8D6-544F15520431}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>kiss_proxy</RootNamespace>
-    <AssemblyName>kiss-proxy</AssemblyName>
+    <ProjectGuid>{161A45BD-C62B-4307-B837-5083D91FC28A}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>kissproxy</RootNamespace>
+    <AssemblyName>kissproxy</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>kissproxy.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
       <HintPath>packages\Portable.BouncyCastle.1.8.1.2\lib\net4\BouncyCastle.Crypto.dll</HintPath>
@@ -40,29 +43,85 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Net" />
-    <Reference Include="System.Windows" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Titanium.Web.Proxy, Version=3.0.130.0, Culture=neutral, PublicKeyToken=8e41e1f1c790d7cf, processorArchitecture=MSIL">
       <HintPath>packages\Titanium.Web.Proxy.3.0.130\lib\net45\Titanium.Web.Proxy.dll</HintPath>
     </Reference>
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TcpForwarder.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="Core\Logger.cs" />
+    <Compile Include="Core\HttpProxy.cs" />
+    <Compile Include="Core\Config.cs" />
+    <Compile Include="Core\TcpFwd.cs" />
+    <Compile Include="Form\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Lib\AssemblyInfo.cs" />
+    <Compile Include="Lib\ErrorHandler.cs" />
+    <Compile Include="Lib\Extensions.cs" />
+    <Compile Include="Lib\Utils.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProxyTestController.cs" />
-    <Compile Include="TcpForwarderSlim.cs" />
+    <EmbeddedResource Include="Form\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="kissproxy.ico" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>echo [INFO] End of build
+
+set "CNAFDIR=$(SolutionDir)..\cnaf"
+
+if exist "%25CNAFDIR%25" ( 
+	echo [INFO] Copying output files to %25CNAFDIR%25 folder...
+	if exist "$(ProjectDir)$(Outdir)$(TargetName)$(TargetExt)" (
+		copy /Y "$(ProjectDir)$(Outdir)$(TargetName)$(TargetExt)" "%25CNAFDIR%25\$(TargetName)$(TargetExt)" &gt;nul
+	)
+	if exist "$(ProjectDir)$(Outdir)$(TargetName).pdb" (
+		copy /Y "$(ProjectDir)$(Outdir)$(TargetName).pdb" "%25CNAFDIR%25\$(TargetName).pdb") &gt;nul
+	)
+                  copy /Y "$(ProjectDir)$(Outdir)*.dll" "%25CNAFDIR%25\" &gt;nul
+)
+
+:label_end
+exit 0</PostBuildEvent>
+  </PropertyGroup>
 </Project>

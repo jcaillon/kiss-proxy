@@ -5,12 +5,12 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace kiss_proxy {
+namespace kissproxy.Core {
 
-    public class TcpForwarder {
+    public class TcpFwd {
 
-        public IPEndPoint Server { get; set; }
-        public IPEndPoint Client { get; set; }
+        public IPEndPoint Local { get; set; }
+        public IPEndPoint Distant { get; set; }
 
         public int Buffer { get; set; }
         public bool Running { get; set; }
@@ -22,6 +22,18 @@ namespace kiss_proxy {
         public event EventHandler<ProxyDataEventArgs> ClientDataSentToServer;
         public event EventHandler<ProxyDataEventArgs> ServerDataSentToClient;
         public event EventHandler<ProxyByteDataEventArgs> BytesTransfered;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="local"></param>
+        /// <param name="distant"></param>
+        /// <param name="buffer"></param>
+        public TcpFwd(IPEndPoint local, IPEndPoint distant, int buffer = 4096) {
+            Local = local;
+            Distant = distant;
+            Buffer = buffer;
+        }
 
         /// <summary>
         /// Start the TCP relayer
@@ -41,7 +53,7 @@ namespace kiss_proxy {
         /// </summary>
         /// <returns></returns>
         private async Task AcceptConnections() {
-            _listener = new TcpListener(Server.Address, Server.Port);
+            _listener = new TcpListener(Local.Address, Local.Port);
             var bufferSize = Buffer; // Get the current buffer size on start
             _listener.Start();
             Running = true;
@@ -53,7 +65,7 @@ namespace kiss_proxy {
                     var client = await _listener.AcceptTcpClientAsync().WithWaitCancellation(_cancellationTokenSource.Token);
                     if (client != null) {
                         // Proxy the data from the client to the server until the end of stream filling the buffer.
-                        await ProxyClientConnection(client, bufferSize);
+                        ProxyClientConnection(client, bufferSize);
                     }
 
                 }
@@ -70,12 +82,12 @@ namespace kiss_proxy {
         /// <param name="client"></param>
         /// <param name="bufferSize"></param>
         /// <returns></returns>
-        private async Task ProxyClientConnection(TcpClient client, int bufferSize) {
+        private void ProxyClientConnection(TcpClient client, int bufferSize) {
 
             // Handle this client
             // Send the server data to client and client data to server - swap essentially.
             var clientStream = client.GetStream();
-            TcpClient server = new TcpClient(Client.Address.ToString(), Client.Port);
+            TcpClient server = new TcpClient(Distant.Address.ToString(), Distant.Port);
             var serverStream = server.GetStream();
 
             var cancellationToken = _cancellationTokenSource.Token;
@@ -176,38 +188,6 @@ namespace kiss_proxy {
             }
         }
 
-        public TcpForwarder(short port) {
-            Server = new IPEndPoint(IPAddress.Any, port);
-            Client = new IPEndPoint(IPAddress.Any, port + 1);
-            Buffer = 4096;
-        }
-
-        public TcpForwarder(short port, IPAddress ipAddress) {
-            Server = new IPEndPoint(ipAddress, port);
-            Client = new IPEndPoint(ipAddress, port + 1);
-            Buffer = 4096;
-        }
-
-        public TcpForwarder(short port, IPAddress ipAddress, int buffer) {
-            Server = new IPEndPoint(ipAddress, port);
-            Client = new IPEndPoint(ipAddress, port + 1);
-            Buffer = buffer;
-        }
-
-        public TcpForwarder(ProxyDefinition definition) {
-            Server = new IPEndPoint(definition.ServerAddress, definition.ServerPort);
-            Client = new IPEndPoint(definition.ClientAddress, definition.ClientPort);
-            Buffer = 4096;
-        }
-
-
-    }
-
-    public class ProxyDefinition {
-        public IPAddress ServerAddress { get; set; }
-        public IPAddress ClientAddress { get; set; }
-        public Int16 ServerPort { get; set; }
-        public Int16 ClientPort { get; set; }
     }
 
     public class ProxyDataEventArgs : EventArgs {
