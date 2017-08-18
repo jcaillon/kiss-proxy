@@ -57,7 +57,7 @@ namespace kissproxy.Core {
             var bufferSize = Buffer; // Get the current buffer size on start
             _listener.Start();
 
-            Logger.Log(ProxyType.TcpForwarder, Local, Local, "Starting tcp forwarder server...");
+            Logger.Log(ProxyType.TcpForwarder, Distant, Local, "Starting tcp forwarder server...");
             Running = true;
 
             // If there is an exception we want to output the message to the console for debugging
@@ -182,7 +182,7 @@ namespace kissproxy.Core {
                 try {
                     Running = false;
                     _listener.Stop();
-                    Logger.Log(ProxyType.TcpForwarder, Local, Local, "Stopping tcp forwarder server...");
+                    Logger.Log(ProxyType.TcpForwarder, Distant, Local, "Stopping tcp forwarder server...");
 
                     _cancellationTokenSource.Cancel();
                 } catch (Exception ex) {
