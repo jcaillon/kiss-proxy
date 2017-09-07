@@ -14,4 +14,4 @@ Set your browser or any application to send their http requests to this proxy. Y
 
 ### Foward tcp requests
 
-Requests headed to port 666 on your machine or redirected to port 80 on google.com
+Requests headed to port 666 on your machine are redirected to port 80 on google.com
