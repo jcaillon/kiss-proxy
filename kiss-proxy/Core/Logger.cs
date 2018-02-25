@@ -93,7 +93,7 @@ namespace kissproxy.Core {
                 foreach (var logRule in Program.Config.LogRules) {
                     if (!string.IsNullOrEmpty(logRule.UrlMatch) && new Regex(logRule.UrlMatch, RegexOptions.IgnoreCase).Match(request.RequestUri.AbsoluteUri).Success || !string.IsNullOrEmpty(logRule.ClientIp) && clientEndPoint.Address.ToString().Equals(logRule.ClientIp)) {
 
-                        var filePath = DateTime.Now.ToString("HH.mm.ss.fff") + "_" + request.OriginalRequestUrl.ToValidFileName() + "." + (response == null ? "req" : "res");
+                        var filePath = DateTime.Now.ToString("HH.mm.ss.fff") + "_" + request.OriginalUrl.ToValidFileName() + "." + (response == null ? "req" : "res");
                         filePath = Path.Combine(Instance.DumpFolder, filePath);
                         if (filePath.Length >= 258)
                             filePath = filePath.Substring(0, 258);

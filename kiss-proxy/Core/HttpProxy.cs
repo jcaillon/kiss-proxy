@@ -4,7 +4,6 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using kissproxy.Lib;
-using StreamExtended;
 using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
 using Titanium.Web.Proxy.Models;
@@ -40,8 +39,7 @@ namespace kissproxy.Core {
         public void Start() {
             _proxyServer.BeforeRequest += OnRequest;
             _proxyServer.BeforeResponse += OnResponse;
-            _proxyServer.GetCustomUpStreamHttpProxyFunc = GetCustomUpStreamProxy;
-            _proxyServer.GetCustomUpStreamHttpsProxyFunc = GetCustomUpStreamProxy;
+            _proxyServer.GetCustomUpStreamProxyFunc = GetCustomUpStreamProxy;
 
             // adding endpoints
             _thisEndPoint = new IPEndPoint(!string.IsNullOrEmpty(_proxyConfig.LocalAddress) ? IPAddress.Parse(_proxyConfig.LocalAddress) : Utils.LocalMachineIpAddress, _proxyConfig.LocalPort);
