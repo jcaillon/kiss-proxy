@@ -18,12 +18,12 @@ Requests headed to port 666 on your machine are redirected to port 80 on google.
 
 ### HTTPS and certificates
 
-When using this proxy for HTTPS connexions, you need to add the generated certificate (rootCert.pfx) as a trusted party on the machine that will use this proxy.
+When using this proxy for HTTPS connexions, you need to add the generated root certificate (rootCert.pfx) as a trusted certification authority on the machine that will use this proxy.
 Otherwise you will have certificate issues since kissproxy is in fact a "Man in the middle".
 
 #### Windows certificate store
 
-On windows, use `certmgr.msc`, to add the certificate to your **personal** as well as your **trusted root store**.
+On windows, use `certmgr.msc`, to add the certificate to your **trusted root certification authorities** store.
 
 #### JAVA certificate store
 
