@@ -34,6 +34,7 @@ First, convert the .pfx certificate to a .cer format using [openssh](https://www
 ```
 openssl pkcs12 -in rootCert.pfx -out rootCert.crt -nokeys -clcerts
 openssl x509 -inform pem -in rootCert.crt -outform der -out rootCert.cer
+openssl x509 -in rootCert.crt -outform PEM -out rootCert.pem
 ```
 
 Secondly, import this .cer file with `keytool` to the java keystore which can be found under `JAVA_HOME/lib/security/cacerts` or `JAVA_HOME/jre/lib/security/cacerts` if you are using a JDK :
@@ -46,4 +47,10 @@ Example :
 
 ```
 "C:\Program Files\Java\jdk1.8.0_162\bin\keytool.exe" -import -trustcacerts -noprompt -keystore "C:\Program Files\Java\jdk1.8.0_162\jre\lib\security\cacerts" -storepass changeit -alias "titaniumrootcertificate" -file "rootCert.cer"
+```
+
+### Git
+
+```git
+git config --global http.sslCAInfo /d/Profiles/jcaillon/Repo/kiss-proxy/rootCert.pem
 ```
