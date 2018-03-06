@@ -16,6 +16,84 @@ Set your browser or any application to send their http requests to this proxy. Y
 
 Requests headed to port 666 on your machine are redirected to port 80 on google.com
 
+## config.xml example
+
+```xml
+<?xml version="1.0"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Proxies>
+    <Proxy>
+      <LocalAddress>127.0.0.1</LocalAddress>
+      <LocalPort>666</LocalPort>
+      <ExternalProxyRules>
+        <ExternalProxyRule>
+          <RegexUrlMatch>.*(localhost|127\.0\.0\.1).*</RegexUrlMatch>
+          <ProxyHost>NoProxy</ProxyHost>
+          <ProxyPort>0</ProxyPort>
+          <ProxyUsername />
+          <ProxyPassword />
+        </ExternalProxyRule>
+        <ExternalProxyRule>
+          <RegexUrlMatch>.*toredirect.*</RegexUrlMatch>
+          <ProxyHost>192.168.213.137</ProxyHost>
+          <ProxyPort>3128</ProxyPort>
+          <ProxyUsername />
+          <ProxyPassword />
+        </ExternalProxyRule>
+        <ExternalProxyRule>
+          <RegexUrlMatch>.*otherredirect\.com.*</RegexUrlMatch>
+          <ProxyHost>172.27.25.3</ProxyHost>
+          <ProxyPort>8080</ProxyPort>
+          <ProxyUsername />
+          <ProxyPassword />
+        </ExternalProxyRule>
+        <ExternalProxyRule>
+          <RegexUrlMatch>.*</RegexUrlMatch>
+          <ProxyHost>SystemWebProxy</ProxyHost>
+          <ProxyPort>0</ProxyPort>
+          <ProxyUsername />
+          <ProxyPassword />
+        </ExternalProxyRule>
+      </ExternalProxyRules>
+    </Proxy>
+    <Proxy>
+      <LocalAddress />
+      <LocalPort>666</LocalPort>
+      <ExternalProxyRules>
+        <ExternalProxyRule>
+          <RegexUrlMatch>.*test.*</RegexUrlMatch>
+          <ProxyHost>192.168.213.137</ProxyHost>
+          <ProxyPort>3128</ProxyPort>
+          <ProxyUsername />
+          <ProxyPassword />
+        </ExternalProxyRule>
+        <ExternalProxyRule>
+          <RegexUrlMatch>.*</RegexUrlMatch>
+          <ProxyHost>172.27.25.3</ProxyHost>
+          <ProxyPort>8080</ProxyPort>
+          <ProxyUsername />
+          <ProxyPassword />
+        </ExternalProxyRule>
+      </ExternalProxyRules>
+    </Proxy>
+  </Proxies>
+  <TcpForwarders>
+    <TcpForwarder>
+      <LocalAddress />
+      <LocalPort>667</LocalPort>
+      <DistantAddress>172.27.50.55</DistantAddress>
+      <DistantPort>80</DistantPort>
+    </TcpForwarder>
+  </TcpForwarders>
+  <LogRules>
+    <LogRule>
+      <RegexUrlMatch>.*</RegexUrlMatch>
+      <ClientIp></ClientIp>
+    </LogRule>
+  </LogRules>
+</Config>
+```
+
 ### HTTPS and certificates
 
 When using this proxy for HTTPS connexions, you need to add the generated certificate (rootCert.pfx) as a trusted party on the machine that will use this proxy.

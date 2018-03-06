@@ -4,10 +4,8 @@ using System.IO;
 using System.Xml.Serialization;
 
 namespace kissproxy.Core {
-    
     [XmlRoot(ElementName = "Config")]
     public class Config {
-
         private const string ConfigFileName = "config.xml";
 
         private static string ConfigFilePath => Path.Combine(Path.GetDirectoryName(Lib.AssemblyInfo.Location) ?? "", ConfigFileName);
@@ -33,8 +31,10 @@ namespace kissproxy.Core {
                 using (FileStream stream = File.OpenRead(configPath)) {
                     conf = (Config) serializer.Deserialize(stream);
                 }
+
                 return conf;
             }
+
             return null;
         }
 
@@ -93,10 +93,9 @@ namespace kissproxy.Core {
             Process.Start(process);
         }
     }
-    
+
     [XmlRoot(ElementName = "HttpProxy")]
     public class Proxy {
-
         [XmlElement(ElementName = "LocalAddress")]
         public string LocalAddress { get; set; }
 
@@ -106,7 +105,7 @@ namespace kissproxy.Core {
         [XmlArray(ElementName = "ExternalProxyRules")]
         public List<ExternalProxyRule> ExternalProxyRules { get; set; }
     }
-    
+
     [XmlRoot(ElementName = "ExternalProxyRule")]
     public class ExternalProxyRule {
         [XmlElement(ElementName = "RegexUrlMatch")]
@@ -127,7 +126,6 @@ namespace kissproxy.Core {
 
     [XmlRoot(ElementName = "TcpForwarder")]
     public class TcpForwarder {
-
         [XmlElement(ElementName = "LocalAddress")]
         public string LocalAddress { get; set; }
 
@@ -140,7 +138,7 @@ namespace kissproxy.Core {
         [XmlElement(ElementName = "DistantPort")]
         public int DistantPort { get; set; }
     }
-    
+
     [XmlRoot(ElementName = "LogRule")]
     public class LogRule {
         [XmlElement(ElementName = "RegexUrlMatch")]
@@ -149,5 +147,4 @@ namespace kissproxy.Core {
         [XmlElement(ElementName = "ClientIp")]
         public string ClientIp { get; set; }
     }
-
 }

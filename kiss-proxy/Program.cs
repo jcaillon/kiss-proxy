@@ -8,9 +8,7 @@ using kissproxy.Form;
 using kissproxy.Lib;
 
 namespace kissproxy {
-
     static class Program {
-
         internal static Config Config;
 
         internal static bool LogActivated;
@@ -21,13 +19,11 @@ namespace kissproxy {
 
         private static MainForm _mainForm;
 
-
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main() {
-
             // catch unhandled errors to log them
             AppDomain.CurrentDomain.UnhandledException += ErrorHandler.UnhandledErrorHandler;
             Application.ThreadException += ErrorHandler.ThreadErrorHandler;
@@ -64,6 +60,7 @@ namespace kissproxy {
                 Application.Exit();
                 return false;
             }
+
             if (_mainForm != null)
                 _mainForm.ShowBalloon("All done!", "Config file reloaded", ToolTipIcon.Info, 3);
             return true;
@@ -102,11 +99,13 @@ namespace kissproxy {
                 foreach (var proxy in _proxies) {
                     proxy.Stop();
                 }
+
                 _proxies.Clear();
                 // stop TCP FORWARDER
                 foreach (var fwd in _forwarders) {
                     fwd.Stop();
                 }
+
                 _forwarders.Clear();
             } catch (Exception e) {
                 ErrorHandler.LogErrors(e);
@@ -135,9 +134,11 @@ namespace kissproxy {
             foreach (var httpProxy in _proxies) {
                 sb.AppendLine("HTTP PROXY @ " + httpProxy.ServerInfo);
             }
+
             foreach (var fwd in _forwarders) {
                 sb.AppendLine("TCP FOWARDER @ " + fwd.ServerInfo);
             }
+
             MessageBox.Show(sb.ToString(), "Started servers", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }

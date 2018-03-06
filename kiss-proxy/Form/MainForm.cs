@@ -3,7 +3,6 @@ using System.Windows.Forms;
 
 namespace kissproxy.Form {
     public partial class MainForm : System.Windows.Forms.Form {
-
         public MainForm() {
             InitializeComponent();
         }
@@ -19,7 +18,7 @@ namespace kissproxy.Form {
             notifyIcon.ShowBalloonTip(timeInSec);
         }
 
-        private void openconfigToolStripMenuItem_Click(object sender, System.EventArgs e) {
+        private void openconfigToolStripMenuItem_Click(object sender, EventArgs e) {
             Program.OpenConfig();
         }
 

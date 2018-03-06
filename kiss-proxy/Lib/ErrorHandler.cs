@@ -7,9 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace kissproxy.Lib {
-
     internal static class ErrorHandler {
-
         private const string ErrorFileName = "exceptions.log";
 
         /// <summary>
@@ -19,7 +17,7 @@ namespace kissproxy.Lib {
         public static void LogErrors(Exception e, string message = null) {
             if (e == null)
                 return;
-            
+
             try {
                 var info = GetExceptionInfo(e);
 
@@ -36,12 +34,12 @@ namespace kissproxy.Lib {
                 foreach (var line in info.FullException.Split('\n')) {
                     toAppend.AppendLine("    " + line.Trim());
                 }
+
                 toAppend.AppendLine("");
                 toAppend.AppendLine("");
 
                 var errorPath = Path.Combine(Path.GetDirectoryName(AssemblyInfo.Location) ?? "", ErrorFileName);
                 File.AppendAllText(errorPath, toAppend.ToString());
-
             } catch (Exception) {
                 // ignored
             }
@@ -63,6 +61,7 @@ namespace kissproxy.Lib {
                     FullException = e.ToString()
                 };
             }
+
             if (output == null)
                 output = new ExceptionInfo {
                     OriginMethod = "???",

@@ -7,9 +7,7 @@ using System.Threading;
 using kissproxy.Lib;
 
 namespace kissproxy.Core {
-
     internal class Logger {
-
         #region Fields
 
         private const string LogDirectory = "logs";
@@ -56,7 +54,7 @@ namespace kissproxy.Core {
         #region Singleton
 
         private static Logger _instance;
-        
+
         /// <summary>
         /// Get singleton instance of the logger
         /// </summary>
@@ -66,7 +64,7 @@ namespace kissproxy.Core {
         #endregion
 
         #region Public
-        
+
         /// <summary>
         /// Log a new line of access
         /// </summary>
@@ -92,7 +90,6 @@ namespace kissproxy.Core {
             try {
                 foreach (var logRule in Program.Config.LogRules) {
                     if (!string.IsNullOrEmpty(logRule.UrlMatch) && new Regex(logRule.UrlMatch, RegexOptions.IgnoreCase).Match(request.RequestUri.AbsoluteUri).Success || !string.IsNullOrEmpty(logRule.ClientIp) && clientEndPoint.Address.ToString().Equals(logRule.ClientIp)) {
-
                         var filePath = DateTime.Now.ToString("HH.mm.ss.fff") + "_" + request.OriginalUrl.ToValidFileName() + "." + (response == null ? "req" : "res");
                         filePath = Path.Combine(Instance.DumpFolder, filePath);
                         if (filePath.Length >= 258)
@@ -126,7 +123,6 @@ namespace kissproxy.Core {
         }
 
         #endregion
-
     }
 
     #region Enums
@@ -137,5 +133,4 @@ namespace kissproxy.Core {
     }
 
     #endregion
-
 }

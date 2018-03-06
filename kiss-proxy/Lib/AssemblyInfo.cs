@@ -1,4 +1,5 @@
 ﻿#region header
+
 // ========================================================================
 // Copyright (c) 2017 - Julien Caillon (julien.caillon@gmail.com)
 // This file (AssemblyInfo.cs) is part of 3P.
@@ -16,6 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with 3P. If not, see <http://www.gnu.org/licenses/>.
 // ========================================================================
+
 #endregion
 
 using System;
@@ -23,7 +25,6 @@ using System.IO;
 using System.Reflection;
 
 namespace kissproxy.Lib {
-
     internal static class AssemblyInfo {
         private static Assembly _assembly = Assembly.GetExecutingAssembly();
 
@@ -31,20 +32,14 @@ namespace kissproxy.Lib {
         /// Gets the title property
         /// </summary>
         public static string AssemblyProduct {
-            get {
-                return GetAttributeValue<AssemblyProductAttribute>(a => a.Product,
-                    Path.GetFileNameWithoutExtension(_assembly.CodeBase));
-            }
+            get { return GetAttributeValue<AssemblyProductAttribute>(a => a.Product, Path.GetFileNameWithoutExtension(_assembly.CodeBase)); }
         }
 
         /// <summary>
         /// Gets the title property
         /// </summary>
         public static string AssemblyTitle {
-            get {
-                return GetAttributeValue<AssemblyTitleAttribute>(a => a.Title,
-                    Path.GetFileNameWithoutExtension(_assembly.CodeBase));
-            }
+            get { return GetAttributeValue<AssemblyTitleAttribute>(a => a.Title, Path.GetFileNameWithoutExtension(_assembly.CodeBase)); }
         }
 
         /// <summary>
@@ -101,8 +96,7 @@ namespace kissproxy.Lib {
             get { return Path.GetFileName(_assembly.Location); }
         }
 
-        public static string GetAttributeValue<TAttr>(Func<TAttr,
-            string> resolveFunc, string defaultResult = null) where TAttr : Attribute {
+        public static string GetAttributeValue<TAttr>(Func<TAttr, string> resolveFunc, string defaultResult = null) where TAttr : Attribute {
             object[] attributes = _assembly.GetCustomAttributes(typeof(TAttr), false);
             if (attributes.Length > 0)
                 return resolveFunc((TAttr) attributes[0]);

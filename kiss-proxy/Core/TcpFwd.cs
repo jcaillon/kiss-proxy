@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 using kissproxy.Lib;
 
 namespace kissproxy.Core {
-
     public class TcpFwd {
-
         public IPEndPoint Local { get; set; }
         public IPEndPoint Distant { get; set; }
 
@@ -69,7 +67,6 @@ namespace kissproxy.Core {
                         // Proxy the data from the client to the server until the end of stream filling the buffer.
                         ProxyClientConnection(client, bufferSize);
                     }
-
                 }
             } catch (Exception ex) {
                 ErrorHandler.LogErrors(ex);
@@ -85,8 +82,7 @@ namespace kissproxy.Core {
         /// <param name="bufferSize"></param>
         /// <returns></returns>
         private void ProxyClientConnection(TcpClient client, int bufferSize) {
-            
-            Logger.Log(ProxyType.TcpForwarder, (IPEndPoint)client.Client.RemoteEndPoint, Local, $"FWD {Distant.Address}:{Distant.Port}");
+            Logger.Log(ProxyType.TcpForwarder, (IPEndPoint) client.Client.RemoteEndPoint, Local, $"FWD {Distant.Address}:{Distant.Port}");
 
             // Handle this client
             // Send the server data to client and client data to server - swap essentially.
@@ -103,7 +99,6 @@ namespace kissproxy.Core {
             } catch (Exception ex) {
                 ErrorHandler.LogErrors(ex);
             }
-
         }
 
         /// <summary>
@@ -128,16 +123,19 @@ namespace kissproxy.Core {
                     // Socket error - exit loop.  Client will have to reconnect.
                     break;
                 }
+
                 if (clientBytes == 0) {
                     // Client disconnected.
                     break;
                 }
+
                 serverStream.Write(message, 0, clientBytes);
 
                 if (ClientDataSentToServer != null) {
                     ClientDataSentToServer(this, new ProxyDataEventArgs(clientBytes));
                 }
             }
+
             client.Close();
         }
 
@@ -158,21 +156,23 @@ namespace kissproxy.Core {
                         var messageTrimed = message.Reverse().SkipWhile(x => x == 0).Reverse().ToArray();
                         BytesTransfered(this, new ProxyByteDataEventArgs(messageTrimed, "Server"));
                     }
+
                     clientStream.Write(message, 0, serverBytes);
                 } catch {
                     // Server socket error - exit loop.  Client will have to reconnect.
                     break;
                 }
+
                 if (serverBytes == 0) {
                     // server disconnected.
                     break;
                 }
+
                 if (ServerDataSentToClient != null) {
                     ServerDataSentToClient(this, new ProxyDataEventArgs(serverBytes));
                 }
             }
         }
-
 
         /// <summary>
         /// Stop the Proxy Server
@@ -188,10 +188,10 @@ namespace kissproxy.Core {
                 } catch (Exception ex) {
                     ErrorHandler.LogErrors(ex);
                 }
+
                 _cancellationTokenSource = null;
             }
         }
-
     }
 
     public class ProxyDataEventArgs : EventArgs {
@@ -205,6 +205,7 @@ namespace kissproxy.Core {
     public class ProxyByteDataEventArgs : EventArgs {
         public byte[] Bytes;
         public string Source { get; set; }
+
         public ProxyByteDataEventArgs(byte[] bytes, string source) {
             Bytes = bytes;
             Source = source;
@@ -217,7 +218,7 @@ namespace kissproxy.Core {
             var tcs = new TaskCompletionSource<bool>();
 
             // Register with the cancellation token.
-            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
+            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>) s).TrySetResult(true), tcs))
                 // If the task waited on is the cancellation token...
                 if (task != await Task.WhenAny(task, tcs.Task))
                     throw new OperationCanceledException(cancellationToken);
@@ -226,5 +227,4 @@ namespace kissproxy.Core {
             return await task;
         }
     }
-
 }

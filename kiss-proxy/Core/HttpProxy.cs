@@ -9,9 +9,7 @@ using Titanium.Web.Proxy.EventArguments;
 using Titanium.Web.Proxy.Models;
 
 namespace kissproxy.Core {
-
     public class HttpProxy {
-
         private readonly ProxyServer _proxyServer;
 
         private readonly Proxy _proxyConfig;
@@ -28,7 +26,7 @@ namespace kissproxy.Core {
             _proxyServer = new ProxyServer {
                 ExceptionFunc = exception => ErrorHandler.LogErrors(exception),
                 TrustRootCertificate = true,
-                ForwardToUpstreamGateway = true,
+                ForwardToUpstreamGateway = true
             };
             _proxyConfig = proxy;
         }
@@ -44,7 +42,7 @@ namespace kissproxy.Core {
             // adding endpoints
             _thisEndPoint = new IPEndPoint(!string.IsNullOrEmpty(_proxyConfig.LocalAddress) ? IPAddress.Parse(_proxyConfig.LocalAddress) : Utils.LocalMachineIpAddress, _proxyConfig.LocalPort);
             _proxyServer.AddEndPoint(new ExplicitProxyEndPoint(_thisEndPoint.Address, _thisEndPoint.Port, true));
-            
+
             // starting the server
             _proxyServer.Start();
 
@@ -60,6 +58,7 @@ namespace kissproxy.Core {
                     newProxy.UserName = externalProxyRule.ProxyUsername;
                     newProxy.Password = externalProxyRule.ProxyPassword;
                 }
+
                 _externalProxies.Add(externalProxyRule.ProxyHost + ":" + externalProxyRule.ProxyPort, newProxy);
             }
         }
@@ -86,8 +85,12 @@ namespace kissproxy.Core {
                 foreach (var proxyRule in _proxyConfig.ExternalProxyRules) {
                     var reg = new Regex(proxyRule.UrlMatch, RegexOptions.IgnoreCase);
                     if (reg.Match(e.WebSession.Request.RequestUri.AbsoluteUri).Success) {
-
                         ExternalProxy proxy = null;
+
+                        // proxyIgnore
+                        if (proxyRule.ProxyHost.Equals("NoProxy")) {
+                            break;
+                        }
 
                         // try to use the system proxy?
                         if (proxyRule.ProxyHost.Equals("SystemWebProxy")) {
@@ -132,6 +135,7 @@ namespace kissproxy.Core {
                     if (e.WebSession.Request.HasBody) {
                         body = await e.GetRequestBodyAsString();
                     }
+
                     Logger.Dump(e.ClientEndPoint, e.WebSession.Request, null, body);
                 }
 
@@ -153,6 +157,7 @@ namespace kissproxy.Core {
                     if (e.WebSession.Response.HasBody) {
                         body = await e.GetResponseBodyAsString();
                     }
+
                     Logger.Dump(e.ClientEndPoint, e.WebSession.Request, e.WebSession.Response, body);
                 }
             } catch (Exception exception) {
