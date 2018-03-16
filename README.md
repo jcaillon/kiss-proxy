@@ -130,5 +130,5 @@ Example :
 ### Git
 
 ```git
-git config --global http.sslCAInfo /d/Profiles/jcaillon/Repo/kiss-proxy/rootCert.pem
+git config --global http.sslCAInfo /d/Profiles/jcaillon/Repo/kiss-proxy/rootCert.crl
 ```

@@ -59,7 +59,8 @@ namespace kissproxy.Core {
                     newProxy.Password = externalProxyRule.ProxyPassword;
                 }
 
-                _externalProxies.Add(externalProxyRule.ProxyHost + ":" + externalProxyRule.ProxyPort, newProxy);
+                if (!_externalProxies.ContainsKey(externalProxyRule.ProxyHost + ":" + externalProxyRule.ProxyPort))
+                    _externalProxies.Add(externalProxyRule.ProxyHost + ":" + externalProxyRule.ProxyPort, newProxy);
             }
         }
 
