@@ -129,6 +129,16 @@ Example :
 
 ### Git
 
-```git
-git config --global http.sslCAInfo /d/Profiles/jcaillon/Repo/kiss-proxy/rootCert.crl
+Follow this guide : [adding a self signed certificate authority to git store](https://blogs.msdn.microsoft.com/phkelley/2014/01/20/adding-a-corporate-or-self-signed-certificate-authority-to-git-exes-store/)
+
+Switch to using a private copy of the Git root certificate store
+
+```bash
+copy "C:\Program Files\git\mingw32\ssl\certs\ca-bundle.crt" C:\Users\yourname
 ```
+```git
+git config --global http.sslCAInfo C:\Users\yourname\ca-bundle.crt
+```
+
+Then add the exported root certificate to the private copy of the store (edit ca-bundle.crt and add the content of your certificate in this text file)
+
