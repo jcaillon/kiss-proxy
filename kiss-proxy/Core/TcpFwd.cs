@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using kissproxy.Lib;
 
 namespace kissproxy.Core {
+    
     public class TcpFwd {
+        
         public IPEndPoint Local { get; set; }
         public IPEndPoint Distant { get; set; }
 

@@ -85,6 +85,14 @@ Requests headed to port 666 on your machine are redirected to port 80 on google.
       <DistantPort>80</DistantPort>
     </TcpForwarder>
   </TcpForwarders>
+  <UdpForwarders>
+    <UdpForwarder>
+      <LocalAddress />
+      <LocalPort>667</LocalPort>
+      <DistantAddress>172.27.50.55</DistantAddress>
+      <DistantPort>80</DistantPort>
+    </UdpForwarder>
+  </UdpForwarders>
   <LogRules>
     <LogRule>
       <RegexUrlMatch>.*</RegexUrlMatch>
@@ -113,6 +121,7 @@ First, convert the .pfx certificate to a .cer format using [openssh](https://www
 openssl pkcs12 -in rootCert.pfx -out rootCert.crt -nokeys -clcerts
 openssl x509 -inform pem -in rootCert.crt -outform der -out rootCert.cer
 openssl x509 -in rootCert.crt -outform PEM -out rootCert.pem
+openssl x509 -in certificate.crt -text -noout
 ```
 
 Secondly, import this .cer file with `keytool` to the java keystore which can be found under `JAVA_HOME/lib/security/cacerts` or `JAVA_HOME/jre/lib/security/cacerts` if you are using a JDK :
@@ -142,3 +151,13 @@ git config --global http.sslCAInfo C:\Users\yourname\ca-bundle.crt
 
 Then add the exported root certificate to the private copy of the store (edit ca-bundle.crt and add the content of your certificate in this text file)
 
+### Todo
+
+Improve tcp/udp forwarding.
+
+- https://docs.microsoft.com/en-us/dotnet/api/system.net.sockets.udpclient.receiveasync?view=netframework-4.7.2#System_Net_Sockets_UdpClient_ReceiveAsync
+- https://docs.microsoft.com/en-us/dotnet/framework/network-programming/asynchronous-server-socket-example
+- https://www.codeproject.com/Articles/83102/C-SocketAsyncEventArgs-High-Performance-Socket-Cod
+- https://stackoverflow.com/questions/869744/how-to-write-a-scalable-tcp-ip-based-server
+- http://blog.stephencleary.com/2009/04/tcpip-net-sockets-faq.html
+- https://docs.microsoft.com/en-us/dotnet/framework/network-programming/using-an-asynchronous-server-socket

@@ -15,7 +15,9 @@ namespace kissproxy {
 
         private static List<HttpProxy> _proxies = new List<HttpProxy>();
 
-        private static List<TcpFwd> _forwarders = new List<TcpFwd>();
+        private static List<TcpFwd> _tcpForwarders = new List<TcpFwd>();
+        
+        private static List<UdpFwd> _udpForwarders = new List<UdpFwd>();
 
         private static MainForm _mainForm;
 
@@ -81,7 +83,14 @@ namespace kissproxy {
                 // start TCP FORWARDER
                 foreach (var forwarder in Config.TcpForwarders) {
                     var fwd = new TcpFwd(forwarder);
-                    _forwarders.Add(fwd);
+                    _tcpForwarders.Add(fwd);
+                    fwd.Start();
+                }
+
+                // start UDP FORWARDER
+                foreach (var forwarder in Config.UdpForwarders) {
+                    var fwd = new UdpFwd(forwarder);
+                    _udpForwarders.Add(fwd);
                     fwd.Start();
                 }
             } catch (Exception e) {
@@ -101,12 +110,19 @@ namespace kissproxy {
                 }
 
                 _proxies.Clear();
+                
                 // stop TCP FORWARDER
-                foreach (var fwd in _forwarders) {
+                foreach (var fwd in _tcpForwarders) {
+                    fwd.Stop();
+                }
+                
+                // stop UDP FORWARDER
+                foreach (var fwd in _udpForwarders) {
                     fwd.Stop();
                 }
 
-                _forwarders.Clear();
+                _tcpForwarders.Clear();
+                _udpForwarders.Clear();
             } catch (Exception e) {
                 ErrorHandler.LogErrors(e);
             }
@@ -118,8 +134,9 @@ namespace kissproxy {
         internal static void RestartServers() {
             _mainForm.ShowBalloon("Please wait...", "Restarting servers", ToolTipIcon.Info, 3);
             StopServers();
-            if (LoadConfig())
+            if (LoadConfig()) {
                 StartServers();
+            }
             _mainForm.ShowBalloon("All done!", "Servers restarted!", ToolTipIcon.Info, 3);
         }
 
@@ -135,8 +152,12 @@ namespace kissproxy {
                 sb.AppendLine("HTTP PROXY @ " + httpProxy.ServerInfo);
             }
 
-            foreach (var fwd in _forwarders) {
+            foreach (var fwd in _tcpForwarders) {
                 sb.AppendLine("TCP FOWARDER @ " + fwd.ServerInfo);
+            }
+
+            foreach (var fwd in _udpForwarders) {
+                sb.AppendLine("UDP FOWARDER @ " + fwd.ServerInfo);
             }
 
             MessageBox.Show(sb.ToString(), "Started servers", MessageBoxButtons.OK, MessageBoxIcon.Information);

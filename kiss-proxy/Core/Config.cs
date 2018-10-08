@@ -16,6 +16,9 @@ namespace kissproxy.Core {
         [XmlArray(ElementName = "TcpForwarders")]
         public List<TcpForwarder> TcpForwarders { get; set; }
 
+        [XmlArray(ElementName = "UdpForwarders")]
+        public List<UdpForwarder> UdpForwarders { get; set; }
+
         [XmlArray(ElementName = "LogRules")]
         public List<LogRule> LogRules { get; set; }
 
@@ -126,6 +129,21 @@ namespace kissproxy.Core {
 
     [XmlRoot(ElementName = "TcpForwarder")]
     public class TcpForwarder {
+        [XmlElement(ElementName = "LocalAddress")]
+        public string LocalAddress { get; set; }
+
+        [XmlElement(ElementName = "LocalPort")]
+        public int LocalPort { get; set; }
+
+        [XmlElement(ElementName = "DistantAddress")]
+        public string DistantAddress { get; set; }
+
+        [XmlElement(ElementName = "DistantPort")]
+        public int DistantPort { get; set; }
+    }
+
+    [XmlRoot(ElementName = "UdpForwarder")]
+    public class UdpForwarder {
         [XmlElement(ElementName = "LocalAddress")]
         public string LocalAddress { get; set; }
 

@@ -129,7 +129,8 @@ namespace kissproxy.Core {
 
     internal enum ProxyType {
         HttpProxy,
-        TcpForwarder
+        TcpForwarder,
+        UdpForwarder
     }
 
     #endregion
