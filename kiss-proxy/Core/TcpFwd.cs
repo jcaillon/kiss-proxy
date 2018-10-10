@@ -16,7 +16,7 @@ namespace kissproxy.Core {
         public int Buffer { get; set; }
         public bool Running { get; set; }
 
-        private static TcpListener _listener;
+        private TcpListener _listener;
 
         private CancellationTokenSource _cancellationTokenSource;
 
